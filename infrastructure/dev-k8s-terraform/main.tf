@@ -18,12 +18,18 @@ variable "sec-gr-k8s-worker" {
   default = "petclinic-k8s-worker-sec-group"
 }
 
+data "aws_vpc" "name" {
+  default = true
+}
+
 resource "aws_security_group" "petclinic-mutual-sg" {
   name = var.sec-gr-mutual
+  vpc_id = data.aws_vpc.name.id
 }
 
 resource "aws_security_group" "petclinic-kube-worker-sg" {
   name = var.sec-gr-k8s-worker
+  vpc_id = data.aws_vpc.name.id
 
   ingress {
     protocol = "tcp"
@@ -66,6 +72,7 @@ resource "aws_security_group" "petclinic-kube-worker-sg" {
 
 resource "aws_security_group" "petclinic-kube-master-sg" {
   name = var.sec-gr-k8s-master
+  vpc_id = data.aws_vpc.name.id
 
   ingress {
     protocol = "tcp"
@@ -166,7 +173,7 @@ resource "aws_instance" "kube-master" {
 resource "aws_instance" "worker-1" {
     ami = "ami-013f17f36f8b1fefb"
     instance_type = "t3a.medium"
-        iam_instance_profile = module.iam.worker_profile_name
+    iam_instance_profile = module.iam.worker_profile_name
     vpc_security_group_ids = [aws_security_group.petclinic-kube-worker-sg.id, aws_security_group.petclinic-mutual-sg.id]
     key_name = "clarus"
     subnet_id = "subnet-c41ba589"  # select own subnet_id of us-east-1a
