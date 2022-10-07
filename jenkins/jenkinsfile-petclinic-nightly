@@ -122,6 +122,9 @@ pipeline {
             }
         }     
 
+
+
+
         stage('Test the Application Deployment'){
             steps {
                 echo "Check if the ${APP_NAME} app is ready or not"
